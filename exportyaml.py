@@ -262,7 +262,7 @@ def export(graph):
         if not dst.owner in allNodes:
             allNodes[dstNode] = YAMLNode(dstNode,structured_datatypes)
         
-    yaml["version"] = 1.0
+    yaml["version"] = "1.0"
 
     # Scanning nodes is required to extract the structured datatypes
     nodes = [allNodes[x].yaml() for x in allNodes] 
