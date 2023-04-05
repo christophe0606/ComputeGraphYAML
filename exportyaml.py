@@ -139,9 +139,12 @@ def create_YAML_type(t,structured_datatypes):
        return(t.ctype)
 
     
-def create_YAML_IO(io,structured_datatypes):
+def create_YAML_IO(io,structured_datatypes,is_input=False):
     yaml_desc = {}
-    yaml_desc["name"] = io._name 
+    if is_input:
+       yaml_desc["input"] = io._name 
+    else:
+       yaml_desc["output"] = io._name 
     if isinstance(io._nbSamples,list):
        yaml_desc["samples"] = list(io._nbSamples)
     else:
@@ -177,13 +180,14 @@ class YAMLNode():
 
     def yaml(self):
         res = {}
-        res["name"] = self._node._nodeName
+        res["node"] = self._node._nodeName
+        res["kind"] = self._node.typeName
         
         inputs = []
         outputs = []
         for i in self._node._inputs:
             io = self._node._inputs[i]
-            inputs.append(create_YAML_IO(io,self._structured_datatypes))
+            inputs.append(create_YAML_IO(io,self._structured_datatypes,is_input=True))
 
         if inputs:
            res["inputs"] = inputs
