@@ -1,0 +1,42 @@
+{
+     "type" : "object",
+     "properties" : {
+         "version" : {"description":"Version number of the file format",
+                      "type" : "number"},
+         "graph": {
+             "type": "object",
+             "properties" : {
+               "nodes":{
+                    "type": "array",
+                    "items" : {
+                       "type" : "object",
+                       "properties" : {
+                          "name" : {"type":"string"},
+                          "inputs" : {"type" : "array"},
+                          "output" : {"type" : "array"}
+                       },
+                       "required": [ "name" ],
+                       "minProperties":2
+                    },
+                    "minItems": 2,
+                    "uniqueItems": true
+               },
+               "edges":{
+                  "type":"array",
+                  "items": {
+                     "type" : "object",
+                     "properties" : {
+                        "src" : {"type":"object"},
+                        "dst" : {"type":"object"}
+                     },
+                     "required": [ "src","dst" ]
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+               }
+             },
+             "required": [ "nodes","edges" ]
+          }
+     },
+     "required": [ "version","graph" ]
+}

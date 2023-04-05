@@ -1,0 +1,36 @@
+version: 1.0
+graph:
+  nodes:
+  - name: source
+    outputs:
+    - name: o
+      samples: 5
+      type: float32_t
+  - name: processing
+    inputs:
+    - name: i
+      samples: 7
+      type: float32_t
+    outputs:
+    - name: o
+      samples: 7
+      type: float32_t
+  - name: sink
+    inputs:
+    - name: i
+      samples: 5
+      type: float32_t
+  edges:
+  - src:
+      node: source
+      output: o
+    dst:
+      node: processing
+      input: i
+  - src:
+      node: processing
+      output: o
+    dst:
+      node: sink
+      input: i
+
