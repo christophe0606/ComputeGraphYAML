@@ -295,17 +295,41 @@ def export(graph):
     nodes = [allNodes[x].yaml() for x in allNodes] 
     edges = [allEdges[x].yaml() for x in allEdges]
 
+    options = None
+    if graph.defaultFIFOClass != 'FIFO' or graph.duplicateNodeClassName != "Duplicate":
+       options = {}
+       if graph.defaultFIFOClass != 'FIFO':
+          options['FIFO'] = graph.defaultFIFOClass
+       if graph.duplicateNodeClassName != 'Duplicate':
+          options['Duplicate'] = graph.duplicateNodeClassName
+
+
     if len(structured_datatypes)>0:
-        yaml["graph"] = {
-          "structures" : structured_datatypes,
-          "nodes":nodes,
-          "edges":edges,
-        }
+        if options:
+            yaml["graph"] = {
+             "options:" : options,
+             "structures" : structured_datatypes,
+             "nodes":nodes,
+             "edges":edges,
+           }
+        else:
+           yaml["graph"] = {
+             "structures" : structured_datatypes,
+             "nodes":nodes,
+             "edges":edges,
+           }
     else:
-        yaml["graph"] = {
-          "nodes":nodes,
-          "edges":edges,
-        }
+        if options:
+            yaml["graph"] = {
+              "options:" : options,
+              "nodes":nodes,
+              "edges":edges,
+            }
+        else:
+            yaml["graph"] = {
+              "nodes":nodes,
+              "edges":edges,
+            }
    
 
     return yaml

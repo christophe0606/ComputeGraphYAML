@@ -9,107 +9,254 @@ digraph structs {
     fontname="times"
 
 
-convert [label=<
+
+aec [label=<
 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
   <TR>
-    <TD ALIGN="CENTER" PORT="i">convert<BR/>(Convert)</TD>
+    <TD PORT="i"><FONT POINT-SIZE="9.0">i</FONT></TD>
+    <TD ALIGN="CENTER" ROWSPAN="2">aec<BR/>(EchoCanceller)</TD>
+    <TD PORT="o"><FONT POINT-SIZE="9.0">o</FONT></TD>
+  </TR>
+<TR>
+<TD PORT="r"><FONT POINT-SIZE="9.0">r</FONT></TD>
+
+ 
+<TD></TD></TR>
+
+</TABLE>>];
+
+denoise [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD ALIGN="CENTER" PORT="i">denoise<BR/>(Denoise)</TD>
+  </TR>
+</TABLE>>];
+
+downFar [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD ALIGN="CENTER" PORT="i">downFar<BR/>(Resampler)</TD>
+  </TR>
+</TABLE>>];
+
+downNear [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD ALIGN="CENTER" PORT="i">downNear<BR/>(Resampler)</TD>
   </TR>
 </TABLE>>];
 
 dup0 [shape=point,label=dup0]
 
+dup1 [shape=point,label=dup1]
 
-filter [label=<
+
+echo [label=<
 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
   <TR>
-    <TD PORT="i"><FONT POINT-SIZE="9.0">i</FONT></TD>
-    <TD ALIGN="CENTER" ROWSPAN="2">filter<BR/>(ProcessingNode)</TD>
-    <TD PORT="oa"><FONT POINT-SIZE="9.0">oa</FONT></TD>
+    <TD PORT="f"><FONT POINT-SIZE="9.0">f</FONT></TD>
+    <TD ALIGN="CENTER" ROWSPAN="2">echo<BR/>(EchoModel)</TD>
+    <TD PORT="o"><FONT POINT-SIZE="9.0">o</FONT></TD>
+  </TR>
+<TR>
+<TD PORT="n"><FONT POINT-SIZE="9.0">n</FONT></TD>
+
+ 
+<TD></TD></TR>
+
+</TABLE>>];
+
+
+far [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD></TD>
+    <TD ALIGN="CENTER" ROWSPAN="2">far<BR/>(BackgroundSource)</TD>
+    <TD PORT="oleft"><FONT POINT-SIZE="9.0">oleft</FONT></TD>
   </TR>
 <TR>
  
 <TD></TD>
-<TD PORT="ob"><FONT POINT-SIZE="9.0">ob</FONT></TD>
+<TD PORT="oright"><FONT POINT-SIZE="9.0">oright</FONT></TD>
 </TR>
 
 </TABLE>>];
 
-sa [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-  <TR>
-    <TD ALIGN="CENTER" PORT="i">sa<BR/>(Sink)</TD>
-  </TR>
-</TABLE>>];
 
-sb [label=<
+mixFar [label=<
 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
   <TR>
-    <TD ALIGN="CENTER" PORT="i">sb<BR/>(Sink)</TD>
+    <TD PORT="ileft"><FONT POINT-SIZE="9.0">ileft</FONT></TD>
+    <TD ALIGN="CENTER" ROWSPAN="2">mixFar<BR/>(SeparateStereoToMono)</TD>
+    <TD PORT="o"><FONT POINT-SIZE="9.0">o</FONT></TD>
   </TR>
-</TABLE>>];
+<TR>
+<TD PORT="iright"><FONT POINT-SIZE="9.0">iright</FONT></TD>
 
-sc [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-  <TR>
-    <TD ALIGN="CENTER" PORT="i">sc<BR/>(Sink)</TD>
-  </TR>
-</TABLE>>];
+ 
+<TD></TD></TR>
 
-sd [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-  <TR>
-    <TD ALIGN="CENTER" PORT="i">sd<BR/>(Sink)</TD>
-  </TR>
-</TABLE>>];
-
-source [label=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-  <TR>
-    <TD ALIGN="CENTER" PORT="i">source<BR/>(Source)</TD>
-  </TR>
 </TABLE>>];
 
 
+mixNear [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD PORT="ileft"><FONT POINT-SIZE="9.0">ileft</FONT></TD>
+    <TD ALIGN="CENTER" ROWSPAN="2">mixNear<BR/>(SeparateStereoToMono)</TD>
+    <TD PORT="o"><FONT POINT-SIZE="9.0">o</FONT></TD>
+  </TR>
+<TR>
+<TD PORT="iright"><FONT POINT-SIZE="9.0">iright</FONT></TD>
 
-source:i -> filter:i [label="complex(11)"
-,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >7</FONT>
+ 
+<TD></TD></TR>
+
+</TABLE>>];
+
+
+sink [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD PORT="ileft"><FONT POINT-SIZE="9.0">ileft</FONT></TD>
+    <TD ALIGN="CENTER" ROWSPAN="2">sink<BR/>(Sink)</TD>
+    <TD></TD>
+  </TR>
+<TR>
+<TD PORT="iright"><FONT POINT-SIZE="9.0">iright</FONT></TD>
+
+ 
+<TD></TD></TR>
+
+</TABLE>>];
+
+
+src [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD></TD>
+    <TD ALIGN="CENTER" ROWSPAN="2">src<BR/>(Source)</TD>
+    <TD PORT="oleft"><FONT POINT-SIZE="9.0">oleft</FONT></TD>
+  </TR>
+<TR>
+ 
+<TD></TD>
+<TD PORT="oright"><FONT POINT-SIZE="9.0">oright</FONT></TD>
+</TR>
+
+</TABLE>>];
+
+up [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD ALIGN="CENTER" PORT="i">up<BR/>(Resampler)</TD>
+  </TR>
+</TABLE>>];
+
+
+
+far:oleft -> mixFar:ileft [label="s16(800)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
 </TD></TR></TABLE>>
-,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >5</FONT>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
 </TD></TR></TABLE>>]
 
-filter:ob -> convert:i [label="complex(5)"
-,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >5</FONT>
+far:oright -> mixFar:iright [label="s16(800)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
 </TD></TR></TABLE>>
-,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >5</FONT>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
 </TD></TR></TABLE>>]
 
-convert:i -> sd:i [label="quaternion(5)"
-,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >5</FONT>
+src:oleft -> mixNear:ileft [label="s16(800)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
 </TD></TR></TABLE>>
-,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >5</FONT>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
 </TD></TR></TABLE>>]
 
-filter:oa ->  
-dup0 [label="complex(5)"
+src:oright -> mixNear:iright [label="s16(800)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
+</TD></TR></TABLE>>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
+</TD></TR></TABLE>>]
 
-,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >5</FONT>
+mixNear:o -> echo:n [label="s16(800)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
+</TD></TR></TABLE>>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
+</TD></TR></TABLE>>]
+
+downFar:i -> aec:r [label="s16(735)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >735</FONT>
+</TD></TR></TABLE>>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >[185, 185, 185, 180]</FONT>
+</TD></TR></TABLE>>]
+
+echo:o -> downNear:i [label="s16(800)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
+</TD></TR></TABLE>>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
+</TD></TR></TABLE>>]
+
+downNear:i -> aec:i [label="s16(735)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >735</FONT>
+</TD></TR></TABLE>>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >[185, 185, 185, 180]</FONT>
+</TD></TR></TABLE>>]
+
+aec:o -> denoise:i [label="s16(735)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >735</FONT>
+</TD></TR></TABLE>>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >735</FONT>
+</TD></TR></TABLE>>]
+
+denoise:i -> up:i [label="s16(735)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >[185, 185, 185, 180]</FONT>
+</TD></TR></TABLE>>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >735</FONT>
+</TD></TR></TABLE>>]
+
+mixFar:o ->  
+dup0 [label="s16(800)"
+
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
+</TD></TR></TABLE>>]
+dup0echoDelay [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD ALIGN="CENTER" PORT="i">1440</TD>
+  </TR>
+</TABLE>>];
+
+
+ 
+dup0 -> dup0echoDelay:i [label=""]
+
+dup0echoDelay:i -> echo:f [label="s16(1440)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
+</TD></TR></TABLE>>]
+
+
+ 
+dup0 -> downFar:i [label="s16(800)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
+</TD></TR></TABLE>>
+]
+
+up:i ->  
+dup1 [label="s16(800)"
+
+,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
 </TD></TR></TABLE>>]
 
  
-dup0 -> sa:i [label="complex(5)"
-,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >5</FONT>
+dup1 -> sink:ileft [label="s16(800)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
 </TD></TR></TABLE>>
 ]
 
  
-dup0 -> sb:i [label="complex(5)"
-,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >5</FONT>
-</TD></TR></TABLE>>
-]
-
- 
-dup0 -> sc:i [label="complex(5)"
-,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >5</FONT>
+dup1 -> sink:iright [label="s16(800)"
+,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >800</FONT>
 </TD></TR></TABLE>>
 ]
 

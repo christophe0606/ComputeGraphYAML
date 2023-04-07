@@ -128,6 +128,11 @@ def importYaml(r):
         nodes = {}
         the_graph = Graph()
         cstruct={} 
+        if 'options' in g:
+            if 'FIFO' in g['options']:
+                the_graph.defaultFIFOClass = g['options']['FIFO']
+            if 'Duplicate' in g['options']:
+                the_graph.duplicateNodeClassName = g['options']['Duplicate']
         if 'structures' in g:
             for c in g['structures']:
                 name = g['structures'][c]['cname']
@@ -163,10 +168,39 @@ def importYaml(r):
                 dst = nodes[e['dst']['node']]
                 i = e['dst']['input']
 
+                delay = None 
+                if 'delay' in e:
+                    delay = e['delay']
+
+                fifoClass = None 
+                fifoScale = 1.0 
+
+                if 'class' in e: 
+                    fifoClass = e['class']
+
+                if 'scale' in e:
+                    fifoScale = e['scale']
+
                 if o is None:
-                   the_graph.connect(src,dst[i])
+                   if delay is not None:
+                      the_graph.connectWithDelay(src,dst[i],
+                        delay,
+                        fifoScale=fifoScale,
+                        fifoClass=fifoClass)
+                   else:
+                      the_graph.connect(src,dst[i],
+                        fifoScale=fifoScale,
+                        fifoClass=fifoClass)
                 else:
-                   the_graph.connect(src[o],dst[i])
+                   if delay is not None:
+                      the_graph.connectWithDelay(src[o],dst[i],
+                        delay,
+                        fifoScale=fifoScale,
+                        fifoClass=fifoClass)
+                   else:
+                      the_graph.connect(src[o],dst[i],
+                        fifoScale=fifoScale,
+                        fifoClass=fifoClass)
     return(the_graph)
 
 if len(args.others)>0:

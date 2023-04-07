@@ -192,10 +192,10 @@ uint32_t scheduler(int *error)
     FIFO<int16_t,FIFOSIZE7,0,0> fifo7(buf8);
     FIFO<int16_t,FIFOSIZE8,1,0> fifo8(buf9);
     FIFO<int16_t,FIFOSIZE9,0,0> fifo9(buf10);
-    FIFO<int16_t,FIFOSIZE10,1,0> fifo10(buf11);
+    MyFIFO<int16_t,FIFOSIZE10,1,0> fifo10(buf11);
     FIFO<int16_t,FIFOSIZE11,0,0> fifo11(buf12,1440);
     FIFO<int16_t,FIFOSIZE12,1,0> fifo12(buf13);
-    FIFO<int16_t,FIFOSIZE13,1,0> fifo13(buf14);
+    MyFIFO<int16_t,FIFOSIZE13,1,0> fifo13(buf14);
     FIFO<int16_t,FIFOSIZE14,1,0> fifo14(buf15);
     FIFO<int16_t,FIFOSIZE15,1,0> fifo15(buf16);
 
@@ -207,8 +207,8 @@ uint32_t scheduler(int *error)
     Denoise<int16_t,735,int16_t,735> denoise(fifo8,fifo9,echoState,44100,20,0,8000,0,0.0,0.0);
     Resampler<int16_t,800,int16_t,185> downFar(fifo12,fifo5,desc_480_16);
     Resampler<int16_t,800,int16_t,185> downNear(fifo6,fifo7,desc_480_16);
-    Duplicate2<int16_t,800,int16_t,800,int16_t,800> dup0(fifo10,fifo11,fifo12);
-    Duplicate2<int16_t,800,int16_t,800,int16_t,800> dup1(fifo13,fifo14,fifo15);
+    MyDuplicate2<int16_t,800,int16_t,800,int16_t,800> dup0(fifo10,fifo11,fifo12);
+    MyDuplicate2<int16_t,800,int16_t,800,int16_t,800> dup1(fifo13,fifo14,fifo15);
     EchoModel<int16_t,800,int16_t,800,int16_t,800> echo(fifo11,fifo4,fifo6);
     BackgroundSource<int16_t,800,int16_t,800> far(fifo0,fifo1);
     SeparateStereoToMono<int16_t,800,int16_t,800,int16_t,800> mixFar(fifo0,fifo1,fifo10);

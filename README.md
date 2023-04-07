@@ -3,6 +3,7 @@
 * [File structure](#File-Structure)
   * [`version:`](#version)
   * [`graph:`](#graph)
+    * [`options:`](#options)
     * [`structures:`](#structures)
     * [`nodes:`](#nodes)
     * [`edges:`](#edges)
@@ -46,11 +47,12 @@ It is using semantic versioning.
 
 Description of the graph. It contains the following:
 
-| `graph:`                     |              | Content                                       |
-| ---------------------------- | ------------ | --------------------------------------------- |
-| [`structures:`](#structures) | Optional     | C struct used in the graph for IO description |
-| [`nodes:`](#nodes)           | **Required** | List of nodes in the graph                    |
-| [`edges:`](#edges)           | **Required** | List of edges in the graph                    |
+| `graph:`                     |              | Content                                                      |
+| ---------------------------- | ------------ | ------------------------------------------------------------ |
+| [`options:`](#options)       | Optional     | Option to select some default  C++ class for some nodes and edges |
+| [`structures:`](#structures) | Optional     | C struct used in the graph for IO description                |
+| [`nodes:`](#nodes)           | **Required** | List of nodes in the graph                                   |
+| [`edges:`](#edges)           | **Required** | List of edges in the graph                                   |
 
 **Examples:**
 
@@ -62,6 +64,13 @@ graph:
   edges:
   ...
 ```
+
+### `options:`
+
+| `options:`   |          | Content                                                      |
+| ------------ | -------- | ------------------------------------------------------------ |
+| `FIFO:`      | Optional | Name of the C++ class implementing FIFOs in the C++ generated code. (It can be overridden for each edge of the graph) |
+| `Duplicate:` | Optional | `Prefix` of C++ class implementing the implicit `Duplicate` nodes that are introduced to implement one-to-many connections. The C++ class are named `Prefix2` and `Prefix3` (currently limited to 3 outputs for the implicit duplicate nodes. For more outputs you need to introduce explicit duplication nodes in the graph) |
 
 ### `structures:`
 
@@ -107,7 +116,7 @@ Each item in the list has following format:
 
 ### `nodes:`
 
-List of [nodes](#nodes)
+List of [nodes](#node-description)
 
 **Examples:**
 
@@ -123,7 +132,7 @@ nodes:
 
 ### `edges:`
 
-List of [edges](#edges).
+List of [edges](#edge-description).
 
 **Examples:**
 
@@ -335,10 +344,12 @@ It is the name of a C variable.
 
 It contains the following:
 
-| Keyword        | Content                       |
-| -------------- | ----------------------------- |
-| [`src:`](#src) | Source port for the edge      |
-| [`dst:`](#dst) | Destination port for the edge |
+| Keyword        |              | Content                                                      |
+| -------------- | ------------ | ------------------------------------------------------------ |
+| [`src:`](#src) | **Required** | Source port for the edge                                     |
+| [`dst:`](#dst) | **Required** | Destination port for the edge                                |
+| `class:`       | Optional     | Name of the C++ class template implementing this FIFO. The template arguments must be the same than in original FIFO template. The C++ class must inherit from `FIFOBase` |
+| `scale:`       | Optional     | Used in asynchronous scheduling only. It is a float used to scale the synchronous FIFO size to have more margin in asynchronous mode. |
 
 **Examples:**
 
@@ -349,6 +360,17 @@ It contains the following:
   dst:
       node: processing
       input: i
+```
+
+```yml
+- src:
+      node: sourceOdd
+      output: o
+  dst:
+      node: debug
+      input: i
+  class: MyFIFO
+  scale: 3.0
 ```
 
 ### `src:`
@@ -418,6 +440,30 @@ Name of the IO port. It must be a valid Python property name that is not already
 Number of samples produced on an output or consumed on an input.
 
 In case of an asynchronous scheduling, it represents the ideal or average case.
+
+In case of cyclo-static scheduling, this is a list encoding the sequence of generated values.
+
+**Examples**
+
+```yml
+inputs:
+    - input: i
+      samples: 800
+      type: int16_t
+```
+
+For cyclo-static scheduling:
+
+```yml
+outputs:
+    - output: o
+      samples:
+      - 185
+      - 185
+      - 185
+      - 180
+      type: int16_t
+```
 
 ### `type:`
 

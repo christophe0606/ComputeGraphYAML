@@ -1,5 +1,8 @@
 version: '1.0'
 graph:
+  'options:':
+    FIFO: MyFIFO
+    Duplicate: MyDuplicate
   nodes:
   - node: far
     kind: BackgroundSource
