@@ -78,10 +78,9 @@ CG_AFTER_INCLUDES
 Description of the scheduling. 
 
 */
-static unsigned int schedule[42]=
+static unsigned int schedule[9]=
 { 
-7,7,2,0,6,1,3,4,5,7,2,0,6,1,3,4,5,7,7,2,0,6,1,3,4,5,7,2,0,6,1,3,4,5,7,2,0,6,1,3,
-4,5,
+7,8,2,1,4,0,3,5,6,
 };
 
 CG_BEFORE_FIFO_BUFFERS
@@ -90,41 +89,46 @@ CG_BEFORE_FIFO_BUFFERS
 FIFO buffers
 
 ************/
-#define FIFOSIZE0 11
-#define FIFOSIZE1 5
-#define FIFOSIZE2 5
-#define FIFOSIZE3 5
-#define FIFOSIZE4 5
-#define FIFOSIZE5 5
-#define FIFOSIZE6 5
+#define FIFOSIZE0 1
+#define FIFOSIZE1 1
+#define FIFOSIZE2 1
+#define FIFOSIZE3 1
+#define FIFOSIZE4 1
+#define FIFOSIZE5 1
+#define FIFOSIZE6 1
+#define FIFOSIZE7 1
 
-#define BUFFERSIZE1 11
+#define BUFFERSIZE1 1
 CG_BEFORE_BUFFER
-complex buf1[BUFFERSIZE1]={0};
+int16_t buf1[BUFFERSIZE1]={0};
 
-#define BUFFERSIZE2 5
+#define BUFFERSIZE2 1
 CG_BEFORE_BUFFER
-complex buf2[BUFFERSIZE2]={0};
+int16_t buf2[BUFFERSIZE2]={0};
 
-#define BUFFERSIZE3 5
+#define BUFFERSIZE3 1
 CG_BEFORE_BUFFER
-quaternion buf3[BUFFERSIZE3]={0};
+int16_t buf3[BUFFERSIZE3]={0};
 
-#define BUFFERSIZE4 5
+#define BUFFERSIZE4 1
 CG_BEFORE_BUFFER
-complex buf4[BUFFERSIZE4]={0};
+int16_t buf4[BUFFERSIZE4]={0};
 
-#define BUFFERSIZE5 5
+#define BUFFERSIZE5 1
 CG_BEFORE_BUFFER
-complex buf5[BUFFERSIZE5]={0};
+int16_t buf5[BUFFERSIZE5]={0};
 
-#define BUFFERSIZE6 5
+#define BUFFERSIZE6 1
 CG_BEFORE_BUFFER
-complex buf6[BUFFERSIZE6]={0};
+int16_t buf6[BUFFERSIZE6]={0};
 
-#define BUFFERSIZE7 5
+#define BUFFERSIZE7 1
 CG_BEFORE_BUFFER
-complex buf7[BUFFERSIZE7]={0};
+int16_t buf7[BUFFERSIZE7]={0};
+
+#define BUFFERSIZE8 1
+CG_BEFORE_BUFFER
+int16_t buf8[BUFFERSIZE8]={0};
 
 
 CG_BEFORE_SCHEDULER_FUNCTION
@@ -137,26 +141,27 @@ uint32_t scheduler(int *error)
     /*
     Create FIFOs objects
     */
-    FIFO<complex,FIFOSIZE0,0,0> fifo0(buf1);
-    FIFO<complex,FIFOSIZE1,1,0> fifo1(buf2);
-    FIFO<quaternion,FIFOSIZE2,1,0> fifo2(buf3);
-    FIFO<complex,FIFOSIZE3,1,0> fifo3(buf4);
-    FIFO<complex,FIFOSIZE4,1,0> fifo4(buf5);
-    FIFO<complex,FIFOSIZE5,1,0> fifo5(buf6);
-    FIFO<complex,FIFOSIZE6,1,0> fifo6(buf7);
+    FIFO<int16_t,FIFOSIZE0,1,0> fifo0(buf1);
+    FIFO<int16_t,FIFOSIZE1,1,0> fifo1(buf2);
+    FIFO<int16_t,FIFOSIZE2,1,0> fifo2(buf3);
+    FIFO<int16_t,FIFOSIZE3,1,0> fifo3(buf4);
+    MyFIFO<int16_t,FIFOSIZE4,1,0> fifo4(buf5);
+    FIFO<int16_t,FIFOSIZE5,1,0> fifo5(buf6);
+    FIFO<int16_t,FIFOSIZE6,1,0> fifo6(buf7);
+    FIFO<int16_t,FIFOSIZE7,1,0> fifo7(buf8);
 
     CG_BEFORE_NODE_INIT;
     /* 
     Create node objects
     */
-    Convert<complex,5,quaternion,5> convert(fifo1,fifo2);
-    Duplicate3<complex,5,complex,5,complex,5,complex,5> dup0(fifo3,fifo4,fifo5,fifo6);
-    ProcessingNode<complex,7,complex,5,complex,5> filter(fifo0,fifo3,fifo1,4,"Test",someVariable);
-    Sink<complex,5> sa(fifo4);
-    Sink<complex,5> sb(fifo5);
-    Sink<complex,5> sc(fifo6);
-    Sink<quaternion,5> sd(fifo2);
-    Source<complex,5> source(fifo0);
+    NullSink<int16_t,1> debug(fifo4);
+    Duplicate2<int16_t,1,int16_t,1,int16_t,1> dup0(fifo2,fifo3,fifo4);
+    Duplicate2<int16_t,1,int16_t,1,int16_t,1> dup1(fifo5,fifo6,fifo7);
+    ProcessingOddEven<int16_t,1,int16_t,1,int16_t,1> proc(fifo3,fifo0,fifo1);
+    SinkAsync<int16_t,1> sinka(fifo6);
+    SinkAsync<int16_t,1> sinkb(fifo7);
+    SourceEven<int16_t,1> sourceEven(fifo0);
+    SourceOdd<int16_t,1> sourceOdd(fifo2);
 
     /* Run several schedule iterations */
     CG_BEFORE_SCHEDULE;
@@ -164,7 +169,7 @@ uint32_t scheduler(int *error)
     {
         /* Run a schedule iteration */
         CG_BEFORE_ITERATION;
-        for(unsigned long id=0 ; id < 42; id++)
+        for(unsigned long id=0 ; id < 9; id++)
         {
             CG_BEFORE_NODE_EXECUTION;
 
@@ -172,49 +177,64 @@ uint32_t scheduler(int *error)
             {
                 case 0:
                 {
-                   cgStaticError = convert.run();
+                   
+                  {
+
+                   int16_t* i0;
+                   int16_t* o1;
+                   i0=fifo1.getReadBuffer(1);
+                   o1=fifo5.getWriteBuffer(1);
+                   compute(i0,o1,1);
+                   cgStaticError = 0;
+                  }
                 }
                 break;
 
                 case 1:
                 {
-                   cgStaticError = dup0.run();
+                   cgStaticError = debug.run();
                 }
                 break;
 
                 case 2:
                 {
-                   cgStaticError = filter.run();
+                   cgStaticError = dup0.run();
                 }
                 break;
 
                 case 3:
                 {
-                   cgStaticError = sa.run();
+                   cgStaticError = dup1.run();
                 }
                 break;
 
                 case 4:
                 {
-                   cgStaticError = sb.run();
+                   cgStaticError = proc.run();
                 }
                 break;
 
                 case 5:
                 {
-                   cgStaticError = sc.run();
+                   cgStaticError = sinka.run();
                 }
                 break;
 
                 case 6:
                 {
-                   cgStaticError = sd.run();
+                   cgStaticError = sinkb.run();
                 }
                 break;
 
                 case 7:
                 {
-                   cgStaticError = source.run();
+                   cgStaticError = sourceEven.run();
+                }
+                break;
+
+                case 8:
+                {
+                   cgStaticError = sourceOdd.run();
                 }
                 break;
 

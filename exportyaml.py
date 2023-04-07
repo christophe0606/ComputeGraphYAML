@@ -1,5 +1,6 @@
 import argparse
 from yaml import load, dump
+from cmsisdsp.cg.scheduler import *
 
 parser = argparse.ArgumentParser(description='Parse test description')
 parser.add_argument('others', nargs=argparse.REMAINDER)
@@ -10,33 +11,46 @@ if len(args.others)>0:
     testid = args.others[0]
     if testid == 'a':
         from ga.graph import * 
+        path = "ga"
     if testid == 'b':
         from gb.graph import * 
+        path = "gb"
     if testid == 'c':
         # gc is a Python package so we can't reuse
         # this name
         from gctest.graph import * 
+        path = "gctest"
     if testid == 'd':
         from gd.graph import * 
+        path = "gd"
     if testid == 'e':
         from ge.graph import * 
+        path = "ge"
     if testid == 'f':
         from gf.graph import * 
+        path = "gf"
     if testid == 'g':
         from gg.graph import * 
+        path = "gg"
     if testid == 'h':
         from gh.graph import * 
+        path = "gh"
     if testid == 'i':
         from gi.graph import * 
+        path = "gi"
     if testid == 'j':
         from gj.graph import * 
+        path = "gj"
     if testid == 'k':
         from gk.graph import * 
+        path = "gk"
     if testid == 'l':
         from gl.graph import * 
+        path = "gl"
 else:
    # Include definition of the graph
    from ga.graph import * 
+   path = "ga"
 
 class YAMLConstantEdge():
     def __init__(self,src,dst):
@@ -58,11 +72,10 @@ class YAMLConstantEdge():
 
         yaml_desc["src"] = {
           "node": srcNode.name,
-          "constant":True
         }
         yaml_desc["dst"] = {
-          "node": dstNode.nodeName,
-          "input":self.dst._name
+          "node": dstNode.nodeID,
+          "input":self.dst.name
         }
 
         return(yaml_desc)
@@ -108,12 +121,12 @@ class YAMLEdge():
         dstNode = self.dst.owner 
 
         yaml_desc["src"] = {
-          "node": srcNode.nodeName,
-          "output":self.src._name
+          "node": srcNode.nodeID,
+          "output":self.src.name
         }
         yaml_desc["dst"] = {
-          "node": dstNode.nodeName,
-          "input":self.dst._name
+          "node": dstNode.nodeID,
+          "input":self.dst.name
         }
         if self.fifoClass:
             if self.fifoClass != "FIFO":
@@ -142,14 +155,14 @@ def create_YAML_type(t,structured_datatypes):
 def create_YAML_IO(io,structured_datatypes,is_input=False):
     yaml_desc = {}
     if is_input:
-       yaml_desc["input"] = io._name 
+       yaml_desc["input"] = io.name 
     else:
-       yaml_desc["output"] = io._name 
+       yaml_desc["output"] = io.name 
     if isinstance(io._nbSamples,list):
-       yaml_desc["samples"] = list(io._nbSamples)
+       yaml_desc["samples"] = list(io.nbSamples)
     else:
-       yaml_desc["samples"] = io._nbSamples 
-    yaml_desc["type"] = create_YAML_type(io._theType,structured_datatypes)
+       yaml_desc["samples"] = io.nbSamples 
+    yaml_desc["type"] = create_YAML_type(io.theType,structured_datatypes)
     
     return(yaml_desc)
 
@@ -164,8 +177,7 @@ class YAMLConstantNode():
 
     def yaml(self):
         res = {}
-        res["name"] = self._node.name
-        res["constant"] = True
+        res["node"] = self.node.name
         return(res)
 
 
@@ -178,30 +190,45 @@ class YAMLNode():
     def node(self):
         return self._node
 
+    @property
+    def structured_datatypes(self):
+        return self._structured_datatypes
+    
+
     def yaml(self):
         res = {}
-        res["node"] = self._node._nodeName
-        res["kind"] = self._node.typeName
+        res["node"] = self.node.nodeID
+        isDSP = False
+        if isinstance(self.node,Dsp):
+           cmsisfunc = self.node.nodeName.split("_")
+           res["dsp"] = cmsisfunc[1]
+           isDSP = True
+        elif isinstance(self.node,Unary):
+           res["unary"] = self.node.nodeName
+        elif isinstance(self.node,Binary):
+           res["binary"] = self.node.nodeName
+        else:
+           res["kind"] = self.node.typeName
         
         inputs = []
         outputs = []
-        for i in self._node._inputs:
-            io = self._node._inputs[i]
-            inputs.append(create_YAML_IO(io,self._structured_datatypes,is_input=True))
+        for i in self.node._inputs:
+            io = self.node._inputs[i]
+            inputs.append(create_YAML_IO(io,self.structured_datatypes,is_input=True))
 
         if inputs:
            res["inputs"] = inputs
 
-        for o in self._node._outputs:
-            io = self._node._outputs[o]
-            outputs.append(create_YAML_IO(io,self._structured_datatypes))
+        for o in self.node._outputs:
+            io = self.node._outputs[o]
+            outputs.append(create_YAML_IO(io,self.structured_datatypes))
 
         if outputs:
            res["outputs"] = outputs
 
-        if self._node.schedArgs:
+        if self.node.schedArgs:
            yaml_args = []
-           for arg in self._node.schedArgs:
+           for arg in self.node.schedArgs:
                if isinstance(arg,ArgLiteral):
                   yaml_args.append({"literal" : arg._name})
                else:
@@ -209,7 +236,7 @@ class YAMLNode():
            if len(yaml_args)>0:
               res["args"] = yaml_args
            else:
-              print(f"Error parsing args for node {self._node._nodeName}")
+              print(f"Error parsing args for node {self.node.nodeID}")
 
         return(res)
 
@@ -286,6 +313,17 @@ def export(graph):
 
 res = export(the_graph)
 
-print(dump(res, default_flow_style=False, sort_keys=False))
+with open(f"{path}/ref.yml","w") as f:
+    print(dump(res, default_flow_style=False, sort_keys=False),file=f)
+    conf=Configuration()
+        
+        
+    sched = the_graph.computeSchedule(conf)
+
+    sched.ccode(f"{path}/generated",config=conf)
+       
+    with open(f"{path}/test.dot","w") as f:
+        sched.graphviz(f)
+
 #print(dump(res, canonical=True))
 #print(dump(res))

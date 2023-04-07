@@ -1,0 +1,105 @@
+version: '1.0'
+graph:
+  structures:
+    complex:
+      cname: complex
+      bytes: 8
+    quaternion:
+      cname: quaternion
+      bytes: 16
+  nodes:
+  - node: source
+    kind: Source
+    outputs:
+    - output: o
+      samples: 5
+      type: complex
+  - node: filter
+    kind: ProcessingNode
+    inputs:
+    - input: i
+      samples: 7
+      type: complex
+    outputs:
+    - output: oa
+      samples: 5
+      type: complex
+    - output: ob
+      samples: 5
+      type: complex
+    args:
+    - literal: 4
+    - literal: Test
+    - variable: someVariable
+  - node: sa
+    kind: Sink
+    inputs:
+    - input: i
+      samples: 5
+      type: complex
+  - node: sb
+    kind: Sink
+    inputs:
+    - input: i
+      samples: 5
+      type: complex
+  - node: sc
+    kind: Sink
+    inputs:
+    - input: i
+      samples: 5
+      type: complex
+  - node: convert
+    kind: Convert
+    inputs:
+    - input: i
+      samples: 5
+      type: complex
+    outputs:
+    - output: o
+      samples: 5
+      type: quaternion
+  - node: sd
+    kind: Sink
+    inputs:
+    - input: i
+      samples: 5
+      type: quaternion
+  edges:
+  - src:
+      node: source
+      output: o
+    dst:
+      node: filter
+      input: i
+  - src:
+      node: filter
+      output: oa
+    dst:
+      node: sa
+      input: i
+  - src:
+      node: filter
+      output: oa
+    dst:
+      node: sb
+      input: i
+  - src:
+      node: filter
+      output: oa
+    dst:
+      node: sc
+      input: i
+  - src:
+      node: filter
+      output: ob
+    dst:
+      node: convert
+      input: i
+  - src:
+      node: convert
+      output: o
+    dst:
+      node: sd
+      input: i
+

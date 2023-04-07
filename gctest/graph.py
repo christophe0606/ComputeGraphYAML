@@ -60,6 +60,8 @@ toMono=Unzip("toMono",floatType, AUDIO_INTERRUPT_LENGTH)
 
 sa=Dsp("scale",floatType,AUDIO_INTERRUPT_LENGTH)
 sb=Dsp("scale",floatType,AUDIO_INTERRUPT_LENGTH)
+sc=Unary("my_scale",floatType,AUDIO_INTERRUPT_LENGTH)
+ba=Binary("my_binary",floatType,AUDIO_INTERRUPT_LENGTH)
 
 add=Dsp("add",floatType,AUDIO_INTERRUPT_LENGTH)
 
@@ -80,8 +82,15 @@ g.connect(toMono.o2,sb.ia)
 g.connect(half,sa.ib)
 g.connect(half,sb.ib)
 
-g.connect(sa.o,add.ia)
+g.connect(sa.o,sc.i)
+g.connect(sc.o,ba.ia)
+g.connect(sb.o,ba.ib)
+
+g.connect(ba.o,add.ia)
 g.connect(sb.o,add.ib)
+
+
+
 
 g.connect(add.o,audioWindow.i)
 g.connect(audioWindow.o, mfcc.i)

@@ -13,6 +13,16 @@ class ProcessingNode(GenericNode):
     def typeName(self):
         return "ProcessingNode"
 
+class Convert(GenericNode):
+    def __init__(self,name,inType,inLength,outType,outLength):
+        GenericNode.__init__(self,name)
+        self.addInput("i",inType,inLength)
+        self.addOutput("o",outType,outLength)
+
+    @property
+    def typeName(self):
+        return "Convert"
+
 class Sink(GenericSink):
     def __init__(self,name,theType,inLength):
         GenericSink.__init__(self,name)
@@ -43,6 +53,7 @@ class Source(GenericSource):
 # object.
 
 complexType=CStructType("complex",8)
+quaternionType=CStructType("quaternion",16)
 
 src=Source("source",complexType,5)
 b=ProcessingNode("filter",complexType,7,5)
@@ -52,7 +63,8 @@ b.addVariableArg("someVariable")
 na = Sink("sa",complexType,5)
 nb = Sink("sb",complexType,5)
 nc = Sink("sc",complexType,5)
-nd = Sink("sd",complexType,5)
+nd = Sink("sd",quaternionType,5)
+c = Convert("convert",complexType,5,quaternionType,5)
 
 
 #dup=Duplicate3("dup",complexType,5)
@@ -69,6 +81,7 @@ g.connect(b.oa,na.i)
 g.connect(b.oa,nb.i)
 g.connect(b.oa,nc.i)
 
-g.connect(b.ob,nd.i)
+g.connect(b.ob,c.i)
+g.connect(c.o,nd.i)
 
 the_graph = g

@@ -1,0 +1,244 @@
+version: '1.0'
+graph:
+  nodes:
+  - node: far
+    kind: BackgroundSource
+    outputs:
+    - output: oleft
+      samples: 800
+      type: int16_t
+    - output: oright
+      samples: 800
+      type: int16_t
+  - node: mixFar
+    kind: SeparateStereoToMono
+    inputs:
+    - input: ileft
+      samples: 800
+      type: int16_t
+    - input: iright
+      samples: 800
+      type: int16_t
+    outputs:
+    - output: o
+      samples: 800
+      type: int16_t
+  - node: src
+    kind: Source
+    outputs:
+    - output: oleft
+      samples: 800
+      type: int16_t
+    - output: oright
+      samples: 800
+      type: int16_t
+    args:
+    - variable: queues->inputQueue
+  - node: mixNear
+    kind: SeparateStereoToMono
+    inputs:
+    - input: ileft
+      samples: 800
+      type: int16_t
+    - input: iright
+      samples: 800
+      type: int16_t
+    outputs:
+    - output: o
+      samples: 800
+      type: int16_t
+  - node: echo
+    kind: EchoModel
+    inputs:
+    - input: f
+      samples: 800
+      type: int16_t
+    - input: n
+      samples: 800
+      type: int16_t
+    outputs:
+    - output: o
+      samples: 800
+      type: int16_t
+  - node: downFar
+    kind: Resampler
+    inputs:
+    - input: i
+      samples: 800
+      type: int16_t
+    outputs:
+    - output: o
+      samples:
+      - 185
+      - 185
+      - 185
+      - 180
+      type: int16_t
+    args:
+    - variable: desc_480_16
+  - node: aec
+    kind: EchoCanceller
+    inputs:
+    - input: i
+      samples: 735
+      type: int16_t
+    - input: r
+      samples: 735
+      type: int16_t
+    outputs:
+    - output: o
+      samples: 735
+      type: int16_t
+    args:
+    - variable: echoState
+    - literal: 44100
+  - node: downNear
+    kind: Resampler
+    inputs:
+    - input: i
+      samples: 800
+      type: int16_t
+    outputs:
+    - output: o
+      samples:
+      - 185
+      - 185
+      - 185
+      - 180
+      type: int16_t
+    args:
+    - variable: desc_480_16
+  - node: denoise
+    kind: Denoise
+    inputs:
+    - input: i
+      samples: 735
+      type: int16_t
+    outputs:
+    - output: o
+      samples: 735
+      type: int16_t
+    args:
+    - variable: echoState
+    - literal: 44100
+    - literal: 20
+    - literal: 0
+    - literal: 8000
+    - literal: 0
+    - literal: 0.0
+    - literal: 0.0
+  - node: up
+    kind: Resampler
+    inputs:
+    - input: i
+      samples:
+      - 185
+      - 185
+      - 185
+      - 180
+      type: int16_t
+    outputs:
+    - output: o
+      samples: 800
+      type: int16_t
+    args:
+    - variable: desc_16_480
+  - node: sink
+    kind: Sink
+    inputs:
+    - input: ileft
+      samples: 800
+      type: int16_t
+    - input: iright
+      samples: 800
+      type: int16_t
+    args:
+    - variable: queues->outputQueue
+    - literal: 2
+  edges:
+  - src:
+      node: far
+      output: oleft
+    dst:
+      node: mixFar
+      input: ileft
+  - src:
+      node: far
+      output: oright
+    dst:
+      node: mixFar
+      input: iright
+  - src:
+      node: src
+      output: oleft
+    dst:
+      node: mixNear
+      input: ileft
+  - src:
+      node: src
+      output: oright
+    dst:
+      node: mixNear
+      input: iright
+  - src:
+      node: mixNear
+      output: o
+    dst:
+      node: echo
+      input: n
+  - src:
+      node: mixFar
+      output: o
+    dst:
+      node: echo
+      input: f
+    delay: 1440
+  - src:
+      node: mixFar
+      output: o
+    dst:
+      node: downFar
+      input: i
+  - src:
+      node: downFar
+      output: o
+    dst:
+      node: aec
+      input: r
+  - src:
+      node: echo
+      output: o
+    dst:
+      node: downNear
+      input: i
+  - src:
+      node: downNear
+      output: o
+    dst:
+      node: aec
+      input: i
+  - src:
+      node: aec
+      output: o
+    dst:
+      node: denoise
+      input: i
+  - src:
+      node: denoise
+      output: o
+    dst:
+      node: up
+      input: i
+  - src:
+      node: up
+      output: o
+    dst:
+      node: sink
+      input: ileft
+  - src:
+      node: up
+      output: o
+    dst:
+      node: sink
+      input: iright
+

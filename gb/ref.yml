@@ -15,8 +15,12 @@ graph:
       type: float32_t
     outputs:
     - output: o
-      samples: 7
+      samples: 5
       type: float32_t
+    args:
+    - literal: 4
+    - literal: testString
+    - variable: someVariable
   - node: sink
     kind: Sink
     inputs:
