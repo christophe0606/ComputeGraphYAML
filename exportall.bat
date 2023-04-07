@@ -48,3 +48,8 @@ ECHO "L"
 python exportyaml.py l
 dot -Tpng -o gl\test.png gl\test.dot
 
+ECHO "M"
+python exportyaml.py m
+dot -Tpng -o gm\test.png gm\test.dot
+
+

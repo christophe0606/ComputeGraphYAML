@@ -1,0 +1,75 @@
+version: '1.0'
+graph:
+  nodes:
+  - node: adc
+    kind: ADC
+    outputs:
+    - output: o
+      samples: 256
+      type: float32_t
+    args:
+    - variable: dsp_context
+  - node: toQ15
+    kind: F32TOQ15
+    inputs:
+    - input: i
+      samples: 192
+      type: float32_t
+    outputs:
+    - output: o
+      samples: 192
+      type: q15_t
+  - node: iir
+    kind: IIR
+    inputs:
+    - input: i
+      samples: 192
+      type: q15_t
+    outputs:
+    - output: o
+      samples: 192
+      type: q15_t
+  - node: toF32
+    kind: Q15TOF32
+    inputs:
+    - input: i
+      samples: 192
+      type: q15_t
+    outputs:
+    - output: o
+      samples: 192
+      type: float32_t
+  - node: dac
+    kind: DAC
+    inputs:
+    - input: i
+      samples: 256
+      type: float32_t
+    args:
+    - variable: dsp_context
+  edges:
+  - src:
+      node: adc
+      output: o
+    dst:
+      node: toQ15
+      input: i
+  - src:
+      node: toQ15
+      output: o
+    dst:
+      node: iir
+      input: i
+  - src:
+      node: iir
+      output: o
+    dst:
+      node: toF32
+      input: i
+  - src:
+      node: toF32
+      output: o
+    dst:
+      node: dac
+      input: i
+

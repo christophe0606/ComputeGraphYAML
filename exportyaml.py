@@ -47,6 +47,9 @@ if len(args.others)>0:
     if testid == 'l':
         from gl.graph import * 
         path = "gl"
+    if testid == 'm':
+        from gm.graph import * 
+        path = "gm"
 else:
    # Include definition of the graph
    from ga.graph import * 
