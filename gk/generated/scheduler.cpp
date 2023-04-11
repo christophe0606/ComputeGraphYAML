@@ -89,44 +89,44 @@ CG_BEFORE_FIFO_BUFFERS
 FIFO buffers
 
 ************/
-#define FIFOSIZE0 1
-#define FIFOSIZE1 1
-#define FIFOSIZE2 1
-#define FIFOSIZE3 1
-#define FIFOSIZE4 1
-#define FIFOSIZE5 1
-#define FIFOSIZE6 1
-#define FIFOSIZE7 1
+#define FIFOSIZE0 2
+#define FIFOSIZE1 2
+#define FIFOSIZE2 2
+#define FIFOSIZE3 2
+#define FIFOSIZE4 3
+#define FIFOSIZE5 2
+#define FIFOSIZE6 2
+#define FIFOSIZE7 2
 
-#define BUFFERSIZE1 1
+#define BUFFERSIZE1 2
 CG_BEFORE_BUFFER
 int16_t buf1[BUFFERSIZE1]={0};
 
-#define BUFFERSIZE2 1
+#define BUFFERSIZE2 2
 CG_BEFORE_BUFFER
 int16_t buf2[BUFFERSIZE2]={0};
 
-#define BUFFERSIZE3 1
+#define BUFFERSIZE3 2
 CG_BEFORE_BUFFER
 int16_t buf3[BUFFERSIZE3]={0};
 
-#define BUFFERSIZE4 1
+#define BUFFERSIZE4 2
 CG_BEFORE_BUFFER
 int16_t buf4[BUFFERSIZE4]={0};
 
-#define BUFFERSIZE5 1
+#define BUFFERSIZE5 3
 CG_BEFORE_BUFFER
 int16_t buf5[BUFFERSIZE5]={0};
 
-#define BUFFERSIZE6 1
+#define BUFFERSIZE6 2
 CG_BEFORE_BUFFER
 int16_t buf6[BUFFERSIZE6]={0};
 
-#define BUFFERSIZE7 1
+#define BUFFERSIZE7 2
 CG_BEFORE_BUFFER
 int16_t buf7[BUFFERSIZE7]={0};
 
-#define BUFFERSIZE8 1
+#define BUFFERSIZE8 2
 CG_BEFORE_BUFFER
 int16_t buf8[BUFFERSIZE8]={0};
 
@@ -136,19 +136,20 @@ uint32_t scheduler(int *error)
 {
     int cgStaticError=0;
     uint32_t nbSchedule=0;
+    int32_t debugCounter=10;
 
     CG_BEFORE_FIFO_INIT;
     /*
     Create FIFOs objects
     */
-    FIFO<int16_t,FIFOSIZE0,1,0> fifo0(buf1);
-    FIFO<int16_t,FIFOSIZE1,1,0> fifo1(buf2);
-    FIFO<int16_t,FIFOSIZE2,1,0> fifo2(buf3);
-    FIFO<int16_t,FIFOSIZE3,1,0> fifo3(buf4);
-    MyFIFO<int16_t,FIFOSIZE4,1,0> fifo4(buf5);
-    FIFO<int16_t,FIFOSIZE5,1,0> fifo5(buf6);
-    FIFO<int16_t,FIFOSIZE6,1,0> fifo6(buf7);
-    FIFO<int16_t,FIFOSIZE7,1,0> fifo7(buf8);
+    FIFO<int16_t,FIFOSIZE0,0,1> fifo0(buf1);
+    FIFO<int16_t,FIFOSIZE1,0,1> fifo1(buf2);
+    FIFO<int16_t,FIFOSIZE2,0,1> fifo2(buf3);
+    FIFO<int16_t,FIFOSIZE3,0,1> fifo3(buf4);
+    MyFIFO<int16_t,FIFOSIZE4,0,1> fifo4(buf5);
+    FIFO<int16_t,FIFOSIZE5,0,1> fifo5(buf6);
+    FIFO<int16_t,FIFOSIZE6,0,1> fifo6(buf7);
+    FIFO<int16_t,FIFOSIZE7,0,1> fifo7(buf8);
 
     CG_BEFORE_NODE_INIT;
     /* 
@@ -165,13 +166,94 @@ uint32_t scheduler(int *error)
 
     /* Run several schedule iterations */
     CG_BEFORE_SCHEDULE;
-    while(cgStaticError==0)
+    while((cgStaticError==0) && (debugCounter > 0))
     {
         /* Run a schedule iteration */
         CG_BEFORE_ITERATION;
         for(unsigned long id=0 ; id < 9; id++)
         {
             CG_BEFORE_NODE_EXECUTION;
+
+            cgStaticError = 0;
+            switch(schedule[id])
+            {
+                case 0:
+                {
+                                        
+                    bool canRun=true;
+                    canRun &= !fifo1.willUnderflowWith(1);
+                    canRun &= !fifo5.willOverflowWith(1);
+
+                    if (!canRun)
+                    {
+                      cgStaticError = CG_SKIP_EXECUTION_ID_CODE;
+                    }
+                    else
+                    {
+                        cgStaticError = 0;
+                    }
+                }
+                break;
+
+                case 1:
+                {
+                    cgStaticError = debug.prepareForRunning();
+                }
+                break;
+
+                case 2:
+                {
+                    cgStaticError = dup0.prepareForRunning();
+                }
+                break;
+
+                case 3:
+                {
+                    cgStaticError = dup1.prepareForRunning();
+                }
+                break;
+
+                case 4:
+                {
+                    cgStaticError = proc.prepareForRunning();
+                }
+                break;
+
+                case 5:
+                {
+                    cgStaticError = sinka.prepareForRunning();
+                }
+                break;
+
+                case 6:
+                {
+                    cgStaticError = sinkb.prepareForRunning();
+                }
+                break;
+
+                case 7:
+                {
+                    cgStaticError = sourceEven.prepareForRunning();
+                }
+                break;
+
+                case 8:
+                {
+                    cgStaticError = sourceOdd.prepareForRunning();
+                }
+                break;
+
+                default:
+                break;
+            }
+
+            if (cgStaticError == CG_SKIP_EXECUTION_ID_CODE)
+            { 
+              cgStaticError = 0;
+              continue;
+            }
+
+            CHECKERROR;
 
             switch(schedule[id])
             {
@@ -244,6 +326,7 @@ uint32_t scheduler(int *error)
             CG_AFTER_NODE_EXECUTION;
             CHECKERROR;
         }
+       debugCounter--;
        CG_AFTER_ITERATION;
        nbSchedule++;
     }

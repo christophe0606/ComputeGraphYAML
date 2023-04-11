@@ -2,6 +2,10 @@ import argparse
 from yaml import load, dump
 from cmsisdsp.cg.scheduler import *
 
+# Argument is test name:
+# For instance:
+# python exportyaml.py a
+# It will generate ga/ref.yml and ga/config.yml
 parser = argparse.ArgumentParser(description='Parse test description')
 parser.add_argument('others', nargs=argparse.REMAINDER)
 
@@ -244,7 +248,7 @@ class YAMLNode():
         return(res)
 
 
-def export(graph):
+def export_graph(graph):
     allNodes = {}
     allEdges = {}
     structured_datatypes = {}
@@ -337,20 +341,136 @@ def export(graph):
 
     return yaml
 
+def export_config(config):
+    yaml = {}
+    yaml["version"] = 1.0
+    default = Configuration()
 
-res = export(the_graph)
+    schedule_options = {}
+    if config.memoryOptimization != default.memoryOptimization:
+        schedule_options["memory-optimization"] = config.memoryOptimization
+
+    if config.sinkPriority  != default.sinkPriority :
+        schedule_options["sink-priority"] = config.sinkPriority
+
+    if config.displayFIFOSizes   != default.displayFIFOSizes  :
+        schedule_options["display-fifo-sizes"] = config.displayFIFOSizes
+
+    if config.dumpSchedule   != default.dumpSchedule  :
+        schedule_options["dump-schedule"] = config.dumpSchedule 
+
+    if schedule_options:
+        yaml["schedule-options"] = schedule_options 
+
+    code_gen = {}
+
+    if config.debugLimit != default.debugLimit:
+        code_gen["debug-limit"] = config.debugLimit  
+
+    if config.dumpFIFO  != default.dumpFIFO :
+        code_gen["dump-fifo"] = config.dumpFIFO  
+
+    if config.schedName   != default.schedName  :
+        code_gen["scheduler-name"] = config.schedName  
+
+
+    if config.prefix    != default.prefix   :
+        code_gen["fifo-prefix"] = config.prefix   
+
+
+    if code_gen:
+        yaml["code-generation-options"] = code_gen 
+
+    c_code_gen = {}
+
+    if config.cOptionalArgs  != default.cOptionalArgs:
+        c_code_gen["c-optional-args"] = config.cOptionalArgs 
+
+    if config.codeArray  != default.codeArray:
+        c_code_gen["code-array"] = config.codeArray 
+
+    if config.switchCase  != default.switchCase:
+        c_code_gen["switch-case"] = config.switchCase 
+
+    if config.eventRecorder   != default.eventRecorder :
+        c_code_gen["event-recorder"] = config.eventRecorder 
+
+    if config.customCName    != default.customCName  :
+        c_code_gen["custom-c-name"] = config.customCName 
+
+    if config.postCustomCName     != default.postCustomCName   :
+        c_code_gen["post-custom-c-name"] = config.postCustomCName      
+
+    if config.genericNodeCName      != default.genericNodeCName    :
+        c_code_gen["generic-node-c-name"] = config.genericNodeCName       
+
+    if config.appNodesCName      != default.appNodesCName    :
+        c_code_gen["app-nodes-c-name"] = config.appNodesCName       
+
+    if config.schedulerCFileName != default.schedulerCFileName    :
+        c_code_gen["scheduler-c-file-name"] = config.schedulerCFileName
+
+    if config.CAPI  != default.CAPI     :
+        c_code_gen["c-api"] = config.CAPI 
+
+    if config.CMSISDSP   != default.CMSISDSP      :
+        c_code_gen["cmsis-dsp"] = config.CMSISDSP 
+
+    if config.asynchronous != default.asynchronous      :
+        c_code_gen["asynchronous"] = config.asynchronous
+
+    if config.FIFOIncrease  != default.FIFOIncrease       :
+        c_code_gen["fifo-increase"] = config.FIFOIncrease 
+
+    if config.asyncDefaultSkip   != default.asyncDefaultSkip        :
+        c_code_gen["async-default-skip"] = config.asyncDefaultSkip   
+
+    if c_code_gen:
+        yaml["c-code-generation-options"] = c_code_gen 
+
+    python_code_gen = {}
+    if config.pyOptionalArgs    != default.pyOptionalArgs         :
+        python_code_gen["py-optional-args"] = config.pyOptionalArgs    
+
+    if config.customPythonName     != default.customPythonName          :
+        python_code_gen["custom-python-name"] = config.customPythonName     
+
+    if config.appNodesPythonName != default.appNodesPythonName          :
+        python_code_gen["app-nodes-python-name"] = config.appNodesPythonName     
+
+    if config.schedulerPythonFileName != default.schedulerPythonFileName           :
+        python_code_gen["scheduler-python-file-name"] = config.schedulerPythonFileName      
+
+    if python_code_gen:
+        yaml["python-code-generation-options"] = python_code_gen 
+
+    graphviz_code_gen = {}
+    if config.horizontal  != default.horizontal            :
+        graphviz_code_gen["horizontal"] = config.horizontal       
+
+    if config.displayFIFOBuf   != default.displayFIFOBuf             :
+        graphviz_code_gen["display-fifo-buf"] = config.displayFIFOBuf        
+
+    if graphviz_code_gen:
+        yaml["graphviz-code-generation-options"] = graphviz_code_gen 
+
+    return(yaml)
+
+graph_yml = export_graph(the_graph)
+conf_yaml = export_config(conf)
 
 with open(f"{path}/ref.yml","w") as f:
-    print(dump(res, default_flow_style=False, sort_keys=False),file=f)
-    conf=Configuration()
-        
-        
-    sched = the_graph.computeSchedule(conf)
+    print(dump(graph_yml, default_flow_style=False, sort_keys=False),file=f)
+    
+with open(f"{path}/config.yml","w") as f:
+    print(dump(conf_yaml, default_flow_style=False, sort_keys=False),file=f)
+    
+sched = the_graph.computeSchedule(conf)
 
-    sched.ccode(f"{path}/generated",config=conf)
+sched.ccode(f"{path}/generated",config=conf)
        
-    with open(f"{path}/test.dot","w") as f:
-        sched.graphviz(f)
+with open(f"{path}/test.dot","w") as f:
+    sched.graphviz(f)
 
-#print(dump(res, canonical=True))
-#print(dump(res))
+#print(dump(graph_yml, canonical=True))
+#print(dump(graph_yml))

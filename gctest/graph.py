@@ -98,3 +98,6 @@ g.connect(mfcc.o,mfccWindow.i)
 g.connect(mfccWindow.o,tf.i)
 
 the_graph = g
+
+conf=Configuration()
+conf.debugLimit=40

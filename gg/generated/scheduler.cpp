@@ -116,6 +116,7 @@ uint32_t scheduler(int *error)
 {
     int cgStaticError=0;
     uint32_t nbSchedule=0;
+    int32_t debugCounter=40;
 
     CG_BEFORE_FIFO_INIT;
     /*
@@ -138,7 +139,7 @@ uint32_t scheduler(int *error)
 
     /* Run several schedule iterations */
     CG_BEFORE_SCHEDULE;
-    while(cgStaticError==0)
+    while((cgStaticError==0) && (debugCounter > 0))
     {
         /* Run a schedule iteration */
         CG_BEFORE_ITERATION;
@@ -184,6 +185,7 @@ uint32_t scheduler(int *error)
             CG_AFTER_NODE_EXECUTION;
             CHECKERROR;
         }
+       debugCounter--;
        CG_AFTER_ITERATION;
        nbSchedule++;
     }

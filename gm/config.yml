@@ -1,0 +1,11 @@
+version: 1.0
+code-generation-options:
+  scheduler-name: dsp_scheduler
+  fifo-prefix: dsp_
+c-code-generation-options:
+  c-optional-args:
+  - dsp_context_t *dsp_context
+  custom-c-name: globalCGSettings.h
+  app-nodes-c-name: DspNodes.h
+  scheduler-c-file-name: dsp_scheduler
+

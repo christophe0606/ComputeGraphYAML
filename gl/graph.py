@@ -208,3 +208,5 @@ the_graph = g
 
 the_graph.defaultFIFOClass = 'MyFIFO'
 the_graph.duplicateNodeClassName = 'MyDuplicate'
+
+conf = Configuration()

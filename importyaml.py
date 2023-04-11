@@ -108,7 +108,10 @@ def mkDspNode(yaml,cstruct):
 
     return(Dsp(name,theType,nbSamples))
 
-
+# First argument is graph yaml
+# Second argument is configuration yaml
+# For instance : 
+# python importyaml.py ga\ref.yml ga\config.yml
 parser = argparse.ArgumentParser(description='Parse test description')
 parser.add_argument('others', nargs=argparse.REMAINDER)
 
@@ -122,7 +125,7 @@ def processArguments(node,n):
             if 'variable' in k:
                 node.addVariableArg(k['variable'])
 
-def importYaml(r):
+def importGraph(r):
     if 'graph' in r:
         g = r['graph']
         nodes = {}
@@ -203,21 +206,129 @@ def importYaml(r):
                         fifoClass=fifoClass)
     return(the_graph)
 
-if len(args.others)>0:
+def importConfig(r):
+    conf = Configuration()
+    if 'schedule-options' in r:
+        so = r['schedule-options']
+
+        if 'memory-optimization' in so:
+            conf.memoryOptimization = so['memory-optimization']
+
+        if 'sink-priority' in so:
+            conf.sinkPriority = so['sink-priority']
+
+        if 'display-fifo-sizes' in so:
+            conf.displayFIFOSizes = so['display-fifo-sizes']
+
+        if 'dump-schedule' in so:
+            conf.dumpSchedule = so['dump-schedule']
+
+    if 'code-generation-options' in r:
+        co = r['code-generation-options']
+
+        if 'debug-limit' in co:
+            conf.debugLimit = co['debug-limit']
+
+        if 'dump-fifo' in co:
+            conf.dumpFIFO = co['dump-fifo']
+
+        if 'scheduler-name' in co:
+            conf.schedName = co['scheduler-name']
+
+        if 'fifo-prefix' in co:
+            conf.prefix = co['fifo-prefix']
+
+    if 'c-code-generation-options' in r:
+        cco = r['c-code-generation-options']
+
+        if 'c-optional-args' in cco:
+            conf.cOptionalArgs = cco['c-optional-args']
+
+        if 'code-array' in cco:
+            conf.codeArray = cco['code-array']
+
+        if 'switch-case' in cco:
+            conf.switchCase = cco['switch-case']
+
+        if 'event-recorder' in cco:
+            conf.eventRecorder = cco['event-recorder']
+
+        if 'custom-c-name' in cco:
+            conf.customCName = cco['custom-c-name']
+
+        if 'post-custom-c-name' in cco:
+            conf.postCustomCName = cco['post-custom-c-name']
+
+        if 'generic-node-c-name' in cco:
+            conf.genericNodeCName = cco['generic-node-c-name']
+
+        if 'app-nodes-c-name' in cco:
+            conf.appNodesCName = cco['app-nodes-c-name']
+
+        if 'scheduler-c-file-name' in cco:
+            conf.schedulerCFileName = cco['scheduler-c-file-name']
+
+        if 'c-api' in cco:
+            conf.CAPI = cco['c-api']
+
+        if 'cmsis-dsp' in cco:
+            conf.CMSISDSP = cco['cmsis-dsp']
+
+        if 'asynchronous' in cco:
+            conf.asynchronous = cco['asynchronous']
+
+        if 'fifo-increase' in cco:
+            conf.FIFOIncrease = cco['fifo-increase']
+
+        if 'async-default-skip' in cco:
+            conf.asyncDefaultSkip = cco['async-default-skip']
+
+    if 'python-code-generation-options' in r:
+        pco = r['python-code-generation-options']
+
+        if 'py-optional-args' in pco:
+            conf.pyOptionalArgs = pco['py-optional-args']
+
+        if 'custom-python-name' in pco:
+            conf.customPythonName = pco['custom-python-name']
+
+        if 'app-nodes-python-name' in pco:
+            conf.appNodesPythonName = pco['app-nodes-python-name']
+
+        if 'scheduler-python-file-name' in pco:
+            conf.schedulerPythonFileName = pco['scheduler-python-file-name']
+
+        if 'scheduler-python-file-name' in pco:
+            conf.schedulerPythonFileName = pco['scheduler-python-file-name']
+
+    if 'graphviz-code-generation-options' in r:
+        gco = r['graphviz-code-generation-options']
+
+        if 'horizontal' in gco:
+            conf.horizontal = gco['horizontal']
+
+        if 'display-fifo-buf' in gco:
+            conf.displayFIFOBuf = gco['display-fifo-buf']
+
+
+    return(conf)
+
+if len(args.others)>1:
     with open(args.others[0],"r") as f:
         r = safe_load(f)
-        the_graph = importYaml(r)
+        the_graph = importGraph(r)
+
+    with open(args.others[1],"r") as f:
+        r = safe_load(f)
+        conf = importConfig(r)
     
-        conf=Configuration()
+        
+    sched = the_graph.computeSchedule(conf)
+    print("Schedule length = %d" % sched.scheduleLength)
+    print("Memory usage %d bytes" % sched.memory)
         
         
-        sched = the_graph.computeSchedule(conf)
-        print("Schedule length = %d" % sched.scheduleLength)
-        print("Memory usage %d bytes" % sched.memory)
-        #
+    sched.ccode("generated",config=conf)
         
-        
-        sched.ccode("generated",config=conf)
-        
-        with open("test.dot","w") as f:
-            sched.graphviz(f)
+    with open("test.dot","w") as f:
+        sched.graphviz(f)

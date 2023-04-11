@@ -41,3 +41,6 @@ g.connect(mfcc.o,slidingMFCC.i)
 g.connect(slidingMFCC.o,sink.i)
 
 the_graph = g
+
+conf=Configuration()
+conf.debugLimit=40

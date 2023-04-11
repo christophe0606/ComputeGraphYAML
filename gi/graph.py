@@ -85,3 +85,5 @@ g.connect(b.ob,c.i)
 g.connect(c.o,nd.i)
 
 the_graph = g
+
+conf=Configuration()

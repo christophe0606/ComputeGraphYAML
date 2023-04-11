@@ -114,3 +114,7 @@ the_graph.connect(src.o,processing.i)
 the_graph.connect(processing.o,sink.i)
 
 
+conf=Configuration()
+conf.debugLimit=1
+conf.cOptionalArgs=["int someVariable"
+                   ]

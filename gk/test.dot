@@ -73,50 +73,50 @@ sourceOdd [label=<
 
 
 
-sourceEven:i -> proc:ib [label="s16(1)"
+sourceEven:i -> proc:ib [label="s16(2)"
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1</FONT>
 </TD></TR></TABLE>>
 ,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1</FONT>
 </TD></TR></TABLE>>]
 
-proc:o -> compute1:i [label="s16(1)"
+proc:o -> compute1:i [label="s16(2)"
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1</FONT>
 </TD></TR></TABLE>>
 ,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1</FONT>
 </TD></TR></TABLE>>]
 
 sourceOdd:i ->  
-dup0 [label="s16(1)"
+dup0 [label="s16(2)"
 
 ,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1</FONT>
 </TD></TR></TABLE>>]
 
  
-dup0 -> proc:ia [label="s16(1)"
+dup0 -> proc:ia [label="s16(2)"
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1</FONT>
 </TD></TR></TABLE>>
 ]
 
  
-dup0 -> debug:i [label="s16(1)"
+dup0 -> debug:i [label="s16(3)"
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1</FONT>
 </TD></TR></TABLE>>
 ]
 
 compute1:i ->  
-dup1 [label="s16(1)"
+dup1 [label="s16(2)"
 
 ,taillabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1</FONT>
 </TD></TR></TABLE>>]
 
  
-dup1 -> sinka:i [label="s16(1)"
+dup1 -> sinka:i [label="s16(2)"
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1</FONT>
 </TD></TR></TABLE>>
 ]
 
  
-dup1 -> sinkb:i [label="s16(1)"
+dup1 -> sinkb:i [label="s16(2)"
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="2"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1</FONT>
 </TD></TR></TABLE>>
 ]

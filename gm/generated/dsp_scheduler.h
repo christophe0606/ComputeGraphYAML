@@ -7,8 +7,8 @@ The support classes and code is covered by CMSIS-DSP license.
 
 */
 
-#ifndef _SCHEDULER_H_ 
-#define _SCHEDULER_H_
+#ifndef _DSP_SCHEDULER_H_ 
+#define _DSP_SCHEDULER_H_
 
 #ifdef   __cplusplus
 extern "C"
@@ -16,7 +16,7 @@ extern "C"
 #endif
 
 
-extern uint32_t scheduler(int *error);
+extern uint32_t dsp_scheduler(int *error,dsp_context_t *dsp_context);
 
 #ifdef   __cplusplus
 }

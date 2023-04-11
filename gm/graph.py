@@ -148,3 +148,18 @@ else:
 
 
 
+conf=Configuration()
+
+conf.cOptionalArgs=["dsp_context_t *dsp_context"]
+
+conf.appNodesCName="DspNodes.h"
+conf.customCName="globalCGSettings.h"
+conf.schedulerCFileName="dsp_scheduler"
+# Prefix for FIFO buffers
+conf.prefix="dsp_"
+# Name of scheduler function
+conf.schedName="dsp_scheduler"
+
+#conf.memoryOptimization=True
+
+conf.eventRecorder=False

@@ -50,3 +50,6 @@ g.connect(overlap.o,sink.i)
 
 
 the_graph = g
+
+conf=Configuration()
+conf.debugLimit=40

@@ -9,10 +9,10 @@ The support classes and code is covered by CMSIS-DSP license.
 
 
 #include "arm_math.h"
-#include "custom.h"
+#include "globalCGSettings.h"
 #include "GenericNodes.h"
-#include "AppNodes.h"
-#include "scheduler.h"
+#include "DspNodes.h"
+#include "dsp_scheduler.h"
 
 #if !defined(CHECKERROR)
 #define CHECKERROR       if (cgStaticError < 0) \
@@ -96,23 +96,23 @@ FIFO buffers
 
 #define BUFFERSIZE1 384
 CG_BEFORE_BUFFER
-float32_t buf1[BUFFERSIZE1]={0};
+float32_t dsp_buf1[BUFFERSIZE1]={0};
 
 #define BUFFERSIZE2 192
 CG_BEFORE_BUFFER
-q15_t buf2[BUFFERSIZE2]={0};
+q15_t dsp_buf2[BUFFERSIZE2]={0};
 
 #define BUFFERSIZE3 192
 CG_BEFORE_BUFFER
-q15_t buf3[BUFFERSIZE3]={0};
+q15_t dsp_buf3[BUFFERSIZE3]={0};
 
 #define BUFFERSIZE4 384
 CG_BEFORE_BUFFER
-float32_t buf4[BUFFERSIZE4]={0};
+float32_t dsp_buf4[BUFFERSIZE4]={0};
 
 
 CG_BEFORE_SCHEDULER_FUNCTION
-uint32_t scheduler(int *error)
+uint32_t dsp_scheduler(int *error,dsp_context_t *dsp_context)
 {
     int cgStaticError=0;
     uint32_t nbSchedule=0;
@@ -121,10 +121,10 @@ uint32_t scheduler(int *error)
     /*
     Create FIFOs objects
     */
-    FIFO<float32_t,FIFOSIZE0,0,0> fifo0(buf1);
-    FIFO<q15_t,FIFOSIZE1,1,0> fifo1(buf2);
-    FIFO<q15_t,FIFOSIZE2,1,0> fifo2(buf3);
-    FIFO<float32_t,FIFOSIZE3,0,0> fifo3(buf4);
+    FIFO<float32_t,FIFOSIZE0,0,0> fifo0(dsp_buf1);
+    FIFO<q15_t,FIFOSIZE1,1,0> fifo1(dsp_buf2);
+    FIFO<q15_t,FIFOSIZE2,1,0> fifo2(dsp_buf3);
+    FIFO<float32_t,FIFOSIZE3,0,0> fifo3(dsp_buf4);
 
     CG_BEFORE_NODE_INIT;
     /* 

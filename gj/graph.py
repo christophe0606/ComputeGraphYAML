@@ -50,3 +50,5 @@ g.connectWithDelay(b.o,b.ib,5)
 
 
 the_graph = g
+
+conf=Configuration()

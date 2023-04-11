@@ -81,3 +81,16 @@ g.connect(comp.o,sinkb.i)
 
 
 the_graph = g
+
+conf=Configuration()
+conf.debugLimit=10
+conf.cOptionalArgs=""
+
+conf.memoryOptimization=True
+
+conf.codeArray = True
+conf.switchCase = True
+
+conf.asynchronous = True 
+
+conf.FIFOIncrease = 2.0

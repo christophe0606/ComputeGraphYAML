@@ -29,3 +29,5 @@ g.connect(processing.o, sink.i)
 
 
 the_graph = g
+
+conf=Configuration()
